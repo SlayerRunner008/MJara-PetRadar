@@ -1,14 +1,13 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { FoundPetsService } from './found-pets.service';
+import type { FoundPetDto } from 'src/core/interfaces/FoundPet.interface';
 
 @Controller('found-pets')
 export class FoundPetsController {
-
-    constructor(private readonly FoundPetsService : FoundPetsService){}
+    constructor(private readonly foundPetsService: FoundPetsService) {}
 
     @Post()
-    async createFoundPet(){
-        const res = await this.FoundPetsService.createFoundPet();
-        return res;
+    async createFoundPet(@Body() foundPetDto: FoundPetDto) {
+        return await this.foundPetsService.createFoundPet(foundPetDto);
     }
 }

@@ -6,6 +6,8 @@ import { LostPetsModule } from './lost-pets/lost-pets.module';
 import { FoundPetsModule } from './found-pets/found-pets.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { envs } from './config/envs';
+import { FoundPet } from './core/db/entities/found-pet.entity';
+import { LostPet } from './core/db/entities/lost-pet.entity';
 
 @Module({
   imports: [EmailModule, LostPetsModule, FoundPetsModule, TypeOrmModule.forRoot({
@@ -15,7 +17,7 @@ import { envs } from './config/envs';
     database:envs.DB_NAME,
     username:envs.DB_USER,
     password:envs.DB_PASSWORD,
-    entities:[],
+    entities:[FoundPet,LostPet],
     synchronize:false,
     migrations: []
   })],

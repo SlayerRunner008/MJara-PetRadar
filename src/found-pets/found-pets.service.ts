@@ -1,27 +1,43 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { EmailService } from 'src/email/email.service';
-import { EmailOptions } from 'src/email/mail-options.interface';
+import { FoundPet } from 'src/core/db/entities/found-pet.entity';
+import { FoundPetDto } from 'src/core/interfaces/FoundPet.interface';
+import { generateFoundPetEmailTemplate } from './found-pet-email.template';
+
 
 @Injectable()
 export class FoundPetsService {
+    constructor(
+        @InjectRepository(FoundPet)
+        private readonly foundPetRepository: Repository<FoundPet>,
+        private readonly emailService: EmailService
+    ) {}
 
-        constructor(private readonly emailService:EmailService){}
+    async createFoundPet(dto: FoundPetDto): Promise<boolean> {
+        const newPet = this.foundPetRepository.create({
+            ...dto,
+            location: {
+                type: 'Point',
+                coordinates: [dto.lon, dto.lat]
+            }
+        });
 
+        await this.foundPetRepository.save(newPet);
 
-    
-        async createFoundPet():Promise<Boolean>{
+        const template = generateFoundPetEmailTemplate(dto);
 
-            const options: EmailOptions = {
-            to : "mjaravillasana@gmail.com",
-            subject:"found-pet",
-            html: 
-            `
-             
-            `
-        
-
+        try {
+            await this.emailService.sendEmail({
+                to: dto.finderEmail,
+                subject: `Gracias por reportar: Mascota Encontrada`,
+                html: template
+            });
+            return true;
+        } catch (error) {
+            console.error('Error enviando el correo:', error);
+            return false;
         }
-            const res = true 
-            return res;
-        }
+    }
 }
