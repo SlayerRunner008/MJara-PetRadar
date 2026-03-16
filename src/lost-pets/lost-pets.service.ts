@@ -20,7 +20,6 @@ export class LostPetsService {
     ) {}
 
  async createLostPet(dto: LostPetDto): Promise<boolean> {
-    // 1. Guardar en DB
     const newPet = this.lostPetRepository.create({
         ...dto,
         location: {
@@ -30,10 +29,8 @@ export class LostPetsService {
     });
     await this.lostPetRepository.save(newPet);
 
-    // 2. Generar Template (Pasa solo el dto)
     const template = generateLostPetEmailTemplate(dto);
     
-    // 3. Enviar Email
     try {
         await this.emailService.sendEmail({
             to: dto.ownerEmail,

@@ -2,7 +2,7 @@ import { envs } from "src/config/envs";
 import { FoundPet } from "./entities/found-pet.entity";
 import { LostPet } from "./entities/lost-pet.entity";
 import { DataSourceOptions } from "typeorm";
-import { DataSource } from "typeorm/browser";
+import { DataSource } from "typeorm";
 
 export const dataSourceOptions : DataSourceOptions = {
         host: envs.DB_HOST,

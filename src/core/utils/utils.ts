@@ -1,4 +1,3 @@
-//https://api.mapbox.com/styles/v1/mapbox/light-v11/static/pin-s-l+000(-87.0186,32.4055)/-87.0186,32.4055,14/500x300?access_token=pk.eyJ1IjoianVhbmZyOTciLCJhIjoiY2x4cnhqZGZpMWUzdTJrb2Qxd2k5Z3huYSJ9.Kp99lB1snn3xzzi26jKy4w
 
 import { envs } from "src/config/envs";
 

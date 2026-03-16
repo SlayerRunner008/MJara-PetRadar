@@ -8,19 +8,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { envs } from './config/envs';
 import { FoundPet } from './core/db/entities/found-pet.entity';
 import { LostPet } from './core/db/entities/lost-pet.entity';
+import { dataSourceOptions } from './core/db/data-source';
 
 @Module({
-  imports: [EmailModule, LostPetsModule, FoundPetsModule, TypeOrmModule.forRoot({
-    host: envs.DB_HOST,
-    type:'postgres',
-    port: envs.DB_PORT,
-    database:envs.DB_NAME,
-    username:envs.DB_USER,
-    password:envs.DB_PASSWORD,
-    entities:[FoundPet,LostPet],
-    synchronize:false,
-    migrations: []
-  })],
+  imports: [EmailModule, LostPetsModule, FoundPetsModule, TypeOrmModule.forRoot(dataSourceOptions)],
   controllers: [AppController],
   providers: [AppService],
 })
