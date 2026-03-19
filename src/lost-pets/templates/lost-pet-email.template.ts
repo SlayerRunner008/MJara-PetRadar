@@ -1,10 +1,6 @@
 import { LostPetDto } from "src/core/interfaces/LostPet.interface";
-import { generateMapboxImage } from "src/core/utils/utils";
 
-export const generateLostPetEmailTemplate = (pet: LostPetDto): string => {
-    // Usamos directamente lat y lon del DTO
-    const mapImageUrl = generateMapboxImage(pet.lat, pet.lon);
-
+export const generateLostPetEmailTemplate = (pet: LostPetDto, mapImageUrl: string): string => {
     return `
     <div style="background-color: #f4f7f6; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">

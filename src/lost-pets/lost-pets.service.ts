@@ -6,6 +6,7 @@ import { LostPet } from 'src/core/db/entities/lost-pet.entity';
 import { LostPetDto } from 'src/core/interfaces/LostPet.interface';
 import { generateMapboxImage } from 'src/core/utils/utils';
 import { generateLostPetEmailTemplate } from './templates/lost-pet-email.template';
+import {logger} from 'src/config/logger';
 // Ajusta la ruta
 
 @Injectable()
@@ -19,6 +20,7 @@ export class LostPetsService {
         private readonly emailService: EmailService
     ) {}
 
+
  async createLostPet(dto: LostPetDto): Promise<boolean> {
     const newPet = this.lostPetRepository.create({
         ...dto,
@@ -27,9 +29,11 @@ export class LostPetsService {
             coordinates: [dto.lon, dto.lat] 
         }
     });
+    logger.info("creando registro de mascota perdida");
     await this.lostPetRepository.save(newPet);
 
-    const template = generateLostPetEmailTemplate(dto);
+    const mapImageUrl = generateMapboxImage(dto.lat, dto.lon);
+    const template = generateLostPetEmailTemplate(dto,mapImageUrl);
     
     try {
         await this.emailService.sendEmail({

@@ -4,7 +4,9 @@ import { Repository } from 'typeorm';
 import { EmailService } from 'src/email/email.service';
 import { FoundPet } from 'src/core/db/entities/found-pet.entity';
 import { FoundPetDto } from 'src/core/interfaces/FoundPet.interface';
-import { generateFoundPetEmailTemplate } from './found-pet-email.template';
+import { generateFoundPetEmailTemplate } from './templates/found-pet-email.template';
+import {logger} from 'src/config/logger';
+import { log } from 'console';
 
 
 @Injectable()
@@ -23,7 +25,7 @@ export class FoundPetsService {
                 coordinates: [dto.lon, dto.lat]
             }
         });
-
+        logger.info("creando registro de mascota encontrada")
         await this.foundPetRepository.save(newPet);
 
         const template = generateFoundPetEmailTemplate(dto);

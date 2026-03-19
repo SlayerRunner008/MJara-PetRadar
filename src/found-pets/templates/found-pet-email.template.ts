@@ -3,6 +3,7 @@ import { generateMapboxImage } from "src/core/utils/utils";
 
 export const generateFoundPetEmailTemplate = (pet: FoundPetDto): string => {
     const mapImageUrl = generateMapboxImage(pet.lat, pet.lon);
+    console.log(mapImageUrl)
 
     return `
     <div style="background-color: #f4f7f6; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
