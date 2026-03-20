@@ -9,9 +9,10 @@ import { envs } from './config/envs';
 import { FoundPet } from './core/db/entities/found-pet.entity';
 import { LostPet } from './core/db/entities/lost-pet.entity';
 import { dataSourceOptions } from './core/db/data-source';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
-  imports: [EmailModule, LostPetsModule, FoundPetsModule, TypeOrmModule.forRoot(dataSourceOptions)],
+  imports: [EmailModule, LostPetsModule, FoundPetsModule, TypeOrmModule.forRoot(dataSourceOptions), CacheModule],
   controllers: [AppController],
   providers: [AppService],
 })
