@@ -9,6 +9,7 @@ import { generateLostPetEmailTemplate } from './templates/lost-pet-email.templat
 import {logger} from 'src/config/logger';
 import Redis from 'ioredis';
 import { envs } from 'src/config/envs';
+import { CacheService } from 'src/cache/cache.service';
 // Ajusta la ruta
 
 
@@ -18,11 +19,10 @@ export class LostPetsService {
 
 
     constructor(
-        // 1. Inyectamos el repositorio de la entidad
         @InjectRepository(LostPet)
         private readonly lostPetRepository: Repository<LostPet>,
-        
-        private readonly emailService: EmailService
+        private readonly emailService: EmailService,
+        private readonly cacheService: CacheService
     ) {}
 
     private readonly redis = new Redis({
@@ -34,11 +34,10 @@ async getLostPets() : Promise<LostPet[]> {
     try {
 
         logger.info("Consultando incidentes");
-        const data = await this.redis.get(CACHE_KEY_ALL_LOST_PETS) ?? "[]";
-        const cacheIncidents = JSON.parse(data) as LostPet[];
-        if(cacheIncidents.length>0){
+        const data = await this.cacheService.get<LostPet[]>(CACHE_KEY_ALL_LOST_PETS);
+        if(data && data.length>0){
             logger.info("Incidentes en cache");
-            return cacheIncidents;
+            return data;
         }
 
         const lostPets = await this.lostPetRepository.find();
@@ -64,7 +63,7 @@ async getLostPets() : Promise<LostPet[]> {
     });
     logger.info("creando registro de mascota perdida");
     await this.lostPetRepository.save(newPet);
-    await this.redis.del(CACHE_KEY_ALL_LOST_PETS);
+    await this.cacheService.delete(CACHE_KEY_ALL_LOST_PETS);
     const mapImageUrl = generateMapboxImage(dto.lat, dto.lon);
     const template = generateLostPetEmailTemplate(dto,mapImageUrl);
     
