@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LostPetsService } from './lost-pets.service';
 import { LostPetsController } from './lost-pets.controller';
 import { EmailModule } from 'src/email/email.module';
-import { LostPet } from 'src/core/db/entities/lost-pet.entity'; 
+import { LostPet } from 'src/core/db/entities/lost-pet.entity';
 import { CacheModule } from 'src/cache/cache.module';
 
 @Module({
@@ -13,6 +13,7 @@ import { CacheModule } from 'src/cache/cache.module';
     CacheModule
   ],
   providers: [LostPetsService],
-  controllers: [LostPetsController]
+  controllers: [LostPetsController],
+  exports: [LostPetsService]
 })
 export class LostPetsModule {}

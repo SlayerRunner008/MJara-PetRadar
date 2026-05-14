@@ -53,6 +53,29 @@ async getLostPets() : Promise<LostPet[]> {
 
 
 
+ async getPetsByRadius(lat: number, lon: number, radiusInMeters: number): Promise<LostPet[]> {
+        try {
+            logger.info(`Buscando mascotas perdidas en ${lat}, ${lon}, en un radio de ${radiusInMeters} metros`);
+            const lostPets = await this.lostPetRepository
+                .createQueryBuilder('lost_pet')
+                .where(`
+                    ST_DWithin(
+                        lost_pet.location::geography,
+                        ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
+                        :radius
+                    )`,
+                    { lon, lat, radius: radiusInMeters }
+                )
+                .andWhere('lost_pet.is_active = true')
+                .getMany();
+            logger.info(`Se encontraron ${lostPets.length} mascotas perdidas activas en un radio de ${radiusInMeters} metros`);
+            return lostPets;
+        } catch (error) {
+            logger.error(`No se buscaron mascotas perdidas por radio :: ${error}`);
+            return [];
+        }
+    }
+
  async createLostPet(dto: LostPetDto): Promise<boolean> {
     const newPet = this.lostPetRepository.create({
         ...dto,
