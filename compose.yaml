@@ -1,5 +1,6 @@
 services:
-  Pet-radar: 
+  Pet-radar:
+    build: .
     image: pet-radar-api:latest
     container_name: PetRadar 
     ports: 

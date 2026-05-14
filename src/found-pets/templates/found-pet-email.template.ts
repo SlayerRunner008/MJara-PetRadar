@@ -1,21 +1,33 @@
 import { FoundPetDto } from "src/core/interfaces/FoundPet.interface";
+import { LostPet } from "src/core/db/entities/lost-pet.entity";
 import { generateMapboxImage } from "src/core/utils/utils";
 
-export const generateFoundPetEmailTemplate = (pet: FoundPetDto): string => {
-    const mapImageUrl = generateMapboxImage(pet.lat, pet.lon);
-    console.log(mapImageUrl)
+export const generateFoundPetEmailTemplate = (pet: FoundPetDto, nearbyLostPets: LostPet[]): string => {
+    const nearbyPoints = nearbyLostPets.map(p => ({
+        lat: (p.location as any).coordinates[1] as number,
+        lon: (p.location as any).coordinates[0] as number,
+    }));
+
+    const mapImageUrl = generateMapboxImage(pet.lat, pet.lon, nearbyPoints);
+
+    const mapLegend = nearbyLostPets.length > 0
+        ? `<p style="font-size: 12px; color: #7f8c8d; margin-top: 8px; text-align: center;">
+               <span style="color: #27ae60; font-weight: bold;">&#9679;</span> Mascota encontrada &nbsp;&nbsp;
+               <span style="color: #e74c3c; font-weight: bold;">&#9679;</span> ${nearbyLostPets.length} mascota(s) perdida(s) en un radio de 500m
+           </p>`
+        : '';
 
     return `
     <div style="background-color: #f4f7f6; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-            
+
             <div style="background-color: #27ae60; color: #ffffff; padding: 20px; text-align: center;">
                 <h1 style="margin: 0; font-size: 24px; letter-spacing: 2px;">¡MASCOTA RESCATADA!</h1>
             </div>
 
             <div style="padding: 30px;">
                 <h2 style="color: #2c3e50; margin-top: 0;">Se encontró un: <span style="color: #27ae60;">${pet.species}</span></h2>
-                
+
                 <div style="background-color: #f2fdf5; padding: 15px; border-radius: 10px; border-left: 5px solid #27ae60; margin-bottom: 20px;">
                     <p style="margin: 5px 0;"><strong>Raza:</strong> ${pet.breed || 'Desconocida'}</p>
                     <p style="margin: 5px 0;"><strong>Color:</strong> ${pet.color}</p>
@@ -32,8 +44,9 @@ export const generateFoundPetEmailTemplate = (pet: FoundPetDto): string => {
                     📍 Ubicación del rescate: <span style="font-weight: normal; color: #555;">${pet.address}</span>
                 </p>
 
-                <div style="text-align: center; margin: 20px 0;">
+                <div style="margin: 20px 0;">
                     <img src="${mapImageUrl}" alt="Mapa de ubicación" style="width: 100%; border-radius: 12px; border: 1px solid #ddd; display: block;">
+                    ${mapLegend}
                 </div>
 
                 <div style="text-align: center; margin-top: 30px;">

@@ -58,7 +58,7 @@ export class FoundPetsService {
             { nearbyLostPets }
         );
 
-        const template = generateFoundPetEmailTemplate(dto);
+        const template = generateFoundPetEmailTemplate(dto, nearbyLostPets);
 
         try {
             await this.emailService.sendEmail({
