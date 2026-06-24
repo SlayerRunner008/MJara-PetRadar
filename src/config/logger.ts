@@ -2,38 +2,36 @@ import * as appInsights from 'applicationinsights';
 import winston from 'winston';
 import { envs } from './envs';
 
-appInsights
-.setup(envs.APPINSIGHTS_CONNECTION_STRING)
-.setSendLiveMetrics(true)
-.setAutoCollectConsole(false)
-.start();
+const transports: winston.transport[] = [new winston.transports.Console()];
 
-const aiClient = appInsights.defaultClient;
-const appInsightsTransport = new winston.transports.Console({
-    level: "info",
-    format: winston.format.printf((obj)=>{
-        const {level,message,timeStamp} = obj
+if (envs.APPINSIGHTS_CONNECTION_STRING) {
+    appInsights
+        .setup(envs.APPINSIGHTS_CONNECTION_STRING)
+        .setSendLiveMetrics(true)
+        .setAutoCollectConsole(false)
+        .start();
 
-        aiClient.trackTrace({
-            message:`[${level} ${message} ${timeStamp}]`,
-            properties: {timeStamp}
-        })
-        return `[${level} ${message} ${timeStamp}]`;
-    })
-
-});
-
+    const aiClient = appInsights.defaultClient;
+    transports.push(
+        new winston.transports.Console({
+            level: 'info',
+            format: winston.format.printf((obj) => {
+                const { level, message, timeStamp } = obj;
+                aiClient.trackTrace({
+                    message: `[${level} ${message} ${timeStamp}]`,
+                    properties: { timeStamp },
+                });
+                return `[${level} ${message} ${timeStamp}]`;
+            }),
+        }),
+    );
+}
 
 export const logger = winston.createLogger({
-    level: "info",
+    level: 'info',
     format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json()
+        winston.format.json(),
     ),
-    transports:[
-        new winston.transports.Console(),
-        appInsightsTransport
-    ]
-
-
+    transports,
 });

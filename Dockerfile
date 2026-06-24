@@ -1,17 +1,16 @@
-FROM node:25-alpine
-#Instalar NODE 
+FROM node:22-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-
-WORKDIR /app 
-#Copiar proyecto al contenedor / imagen 
-COPY package.json package-lock.json ./ 
-#Instalar las dependencias 
-RUN npm install 
-
-COPY . . 
-#Compilar el proyecto 
-RUN npm run build 
+FROM node:22-alpine AS runner
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
 EXPOSE 3000
-#Elegir un comando de inicio 
-
-CMD ["node","dist/main.js"]
+ENTRYPOINT ["./docker-entrypoint.sh"]

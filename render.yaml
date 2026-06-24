@@ -1,0 +1,61 @@
+services:
+  - type: web
+    name: pet-radar-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api
+    envVars:
+      - key: PORT
+        value: "3000"
+      - key: DB_HOST
+        fromDatabase:
+          name: pet-radar-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: pet-radar-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: pet-radar-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: pet-radar-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: pet-radar-db
+          property: password
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: pet-radar-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: pet-radar-redis
+          property: port
+      - key: MAPBOX_TOKEN
+        sync: false
+      - key: MAILER_EMAIL
+        sync: false
+      - key: MAILER_PASSWORD
+        sync: false
+      - key: MAILER_SERVICE
+        sync: false
+      - key: APPINSIGHTS_CONNECTION_STRING
+        sync: false
+
+  - type: redis
+    name: pet-radar-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+
+databases:
+  - name: pet-radar-db
+    databaseName: petRadardb
+    user: petRadarUser
+    plan: free
