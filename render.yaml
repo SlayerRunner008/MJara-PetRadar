@@ -53,9 +53,10 @@ services:
     name: pet-radar-redis
     plan: free
     maxmemoryPolicy: noeviction
+    ipAllowList: []
 
 databases:
   - name: pet-radar-db
-    databaseName: petRadardb
-    user: petRadarUser
+    databaseName: pet_radar_db
+    user: pet_radar_user
     plan: free
